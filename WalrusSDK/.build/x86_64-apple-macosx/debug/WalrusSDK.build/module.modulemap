@@ -1,0 +1,4 @@
+module WalrusSDK {
+    header "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/WalrusSDK-Swift.h"
+    requires objc
+}
