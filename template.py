@@ -1,12 +1,125 @@
 import os
-from typing import Dict, Optional, Any, BinaryIO, IO, Union
+from typing import Dict, Optional, Any, BinaryIO, IO
 import requests
 from requests.exceptions import RequestException
 import hashlib
-import time
-from functools import wraps
-import pickle
 import tempfile
+import atexit
+import shutil
+
+
+class BlobCache:
+    """
+    A cache for storing downloaded blobs to avoid repeated downloads.
+    
+    Uses blob_id as the cache key and stores files in a temporary directory.
+    """
+
+    def __init__(self, cache_dir: Optional[str] = None, max_size: int = 100):
+        """
+        Initialize the blob cache.
+        
+        Args:
+            cache_dir: Directory to store cached files. If None, uses a temporary directory.
+            max_size: Maximum number of files to keep in the cache.
+        """
+        self.cache_dir = cache_dir or tempfile.mkdtemp(prefix="walrus_cache_")
+        self.max_size = max_size
+        self._cache_index = {}  # blob_id -> file_path
+        self._access_times = {}  # blob_id -> last access time
+        
+        # Ensure cache directory exists
+        os.makedirs(self.cache_dir, exist_ok=True)
+        
+        # Register cleanup on program exit
+        if cache_dir is None:  # Only clean up if we created a temp dir
+            atexit.register(self.cleanup)
+
+    def get(self, blob_id: str) -> Optional[bytes]:
+        """
+        Retrieve a blob from cache if it exists.
+        
+        Args:
+            blob_id: The blob ID to look up
+            
+        Returns:
+            The cached blob data if found, None otherwise
+        """
+        if blob_id not in self._cache_index:
+            return None
+            
+        file_path = self._cache_index[blob_id]
+        
+        try:
+            with open(file_path, "rb") as f:
+                data = f.read()
+            self._access_times[blob_id] = os.path.getmtime(file_path)
+            return data
+        except (IOError, OSError):
+            self._remove_from_cache(blob_id)
+            return None
+
+    def put(self, blob_id: str, data: bytes) -> str:
+        """
+        Store a blob in the cache.
+        
+        Args:
+            blob_id: The blob ID to store
+            data: The blob data to cache
+            
+        Returns:
+            Path to the cached file
+        """
+        # Clean up if cache is full
+        if len(self._cache_index) >= self.max_size:
+            self._evict_oldest()
+            
+        # Create a unique filename based on blob_id
+        filename = hashlib.sha256(blob_id.encode()).hexdigest()
+        file_path = os.path.join(self.cache_dir, filename)
+        
+        try:
+            with open(file_path, "wb") as f:
+                f.write(data)
+            
+            self._cache_index[blob_id] = file_path
+            self._access_times[blob_id] = os.path.getmtime(file_path)
+            return file_path
+        except (IOError, OSError):
+            # If writing fails, remove the file if it was created
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except OSError:
+                    pass
+            raise
+
+    def _remove_from_cache(self, blob_id: str) -> None:
+        """Remove a blob from the cache."""
+        if blob_id in self._cache_index:
+            file_path = self._cache_index[blob_id]
+            try:
+                os.remove(file_path)
+            except OSError:
+                pass
+            del self._cache_index[blob_id]
+            if blob_id in self._access_times:
+                del self._access_times[blob_id]
+
+    def _evict_oldest(self) -> None:
+        """Evict the least recently accessed blob from the cache."""
+        if not self._access_times:
+            return
+            
+        oldest_blob_id = min(self._access_times.items(), key=lambda x: x[1])[0]
+        self._remove_from_cache(oldest_blob_id)
+
+    def cleanup(self) -> None:
+        """Clean up the cache directory."""
+        try:
+            shutil.rmtree(self.cache_dir)
+        except OSError:
+            pass
 
 
 class WalrusAPIError(RequestException):
@@ -30,126 +143,9 @@ class WalrusAPIError(RequestException):
         )
 
 
-class CacheManager:
-    """Handles caching operations for the WalrusClient."""
-    
-    def __init__(self, cache_dir: Optional[str] = None, max_memory_items: int = 100, ttl: int = 3600):
-        """
-        Initialize the cache manager.
-        
-        Args:
-            cache_dir: Directory for persistent cache (None for memory-only)
-            max_memory_items: Maximum items to keep in memory cache
-            ttl: Time-to-live for cache items in seconds
-        """
-        self.memory_cache: Dict[str, dict] = {}
-        self.max_memory_items = max_memory_items
-        self.ttl = ttl
-        self.cache_dir = cache_dir
-        if cache_dir and not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
-    
-    def _get_cache_key(self, method: str, *args, **kwargs) -> str:
-        """Generate a unique cache key for a method call."""
-        key_parts = [method] + [str(arg) for arg in args]
-        for k, v in sorted(kwargs.items()):
-            key_parts.append(f"{k}={v}")
-        key_str = "|".join(key_parts)
-        return hashlib.sha256(key_str.encode()).hexdigest()
-    
-    def _get_cache_file_path(self, key: str) -> str:
-        """Get the filesystem path for a cache key."""
-        if not self.cache_dir:
-            return ""
-        return os.path.join(self.cache_dir, f"walrus_cache_{key}.pkl")
-    
-    def get(self, key: str) -> Optional[Any]:
-        """Retrieve an item from cache."""
-        # Try memory cache first
-        item = self.memory_cache.get(key)
-        if item:
-            if time.time() - item['timestamp'] < self.ttl:
-                return item['data']
-            del self.memory_cache[key]  # Remove expired item
-        
-        # Try filesystem cache if enabled
-        if self.cache_dir:
-            cache_file = self._get_cache_file_path(key)
-            if os.path.exists(cache_file):
-                try:
-                    with open(cache_file, 'rb') as f:
-                        item = pickle.load(f)
-                        if time.time() - item['timestamp'] < self.ttl:
-                            # Add to memory cache for faster access
-                            if len(self.memory_cache) < self.max_memory_items:
-                                self.memory_cache[key] = item
-                            return item['data']
-                        os.remove(cache_file)  # Remove expired cache file
-                except (pickle.PickleError, EOFError):
-                    os.remove(cache_file)  # Remove corrupted cache file
-        return None
-    
-    def set(self, key: str, data: Any) -> None:
-        """Store an item in cache."""
-        item = {
-            'data': data,
-            'timestamp': time.time()
-        }
-        
-        # Update memory cache
-        self.memory_cache[key] = item
-        
-        # If memory cache is full, remove oldest item
-        if len(self.memory_cache) > self.max_memory_items:
-            oldest_key = next(iter(self.memory_cache))
-            del self.memory_cache[oldest_key]
-        
-        # Store in filesystem cache if enabled
-        if self.cache_dir:
-            cache_file = self._get_cache_file_path(key)
-            try:
-                with open(cache_file, 'wb') as f:
-                    pickle.dump(item, f)
-            except (IOError, pickle.PickleError):
-                pass  # Silently fail if we can't write to filesystem cache
-    
-    def clear(self) -> None:
-        """Clear all cached data."""
-        self.memory_cache.clear()
-        if self.cache_dir:
-            for filename in os.listdir(self.cache_dir):
-                if filename.startswith("walrus_cache_") and filename.endswith(".pkl"):
-                    try:
-                        os.remove(os.path.join(self.cache_dir, filename))
-                    except OSError:
-                        pass
-
-
-def cached_method(ttl: Optional[int] = None):
-    """Decorator to cache method results."""
-    def decorator(method):
-        @wraps(method)
-        def wrapper(self, *args, **kwargs):
-            if not hasattr(self, '_cache_manager'):
-                return method(self, *args, **kwargs)
-                
-            cache_key = self._cache_manager._get_cache_key(
-                method.__name__, *args, **kwargs
-            )
-            cached_result = self._cache_manager.get(cache_key)
-            if cached_result is not None:
-                return cached_result
-            
-            result = method(self, *args, **kwargs)
-            self._cache_manager.set(cache_key, result)
-            return result
-        return wrapper
-    return decorator
-
-
 class WalrusClient:
     """
-    Client for interacting with the Walrus API with caching support.
+    Client for interacting with the Walrus API.
 
     Provides methods for uploading and retrieving binary blobs from publisher and aggregator endpoints.
     """
@@ -160,9 +156,7 @@ class WalrusClient:
         aggregator_base_url: str,
         timeout: int = 30,
         cache_dir: Optional[str] = None,
-        max_memory_items: int = 100,
-        cache_ttl: int = 3600,
-        enable_cache: bool = True
+        cache_max_size: int = 100,
     ):
         """
         Initialize the Walrus client.
@@ -171,28 +165,13 @@ class WalrusClient:
             publisher_base_url: Base URL for the publisher service
             aggregator_base_url: Base URL for the aggregator service
             timeout: Request timeout in seconds
-            cache_dir: Directory for persistent cache (None for memory-only)
-            max_memory_items: Maximum items to keep in memory cache
-            cache_ttl: Time-to-live for cache items in seconds
-            enable_cache: Whether to enable caching
+            cache_dir: Directory to store cached blobs. If None, uses a temporary directory.
+            cache_max_size: Maximum number of blobs to cache.
         """
         self.publisher_base_url = publisher_base_url.rstrip("/")
         self.aggregator_base_url = aggregator_base_url.rstrip("/")
         self.timeout = timeout
-        
-        if enable_cache:
-            self._cache_manager = CacheManager(
-                cache_dir=cache_dir,
-                max_memory_items=max_memory_items,
-                ttl=cache_ttl
-            )
-        else:
-            self._cache_manager = None
-
-    def clear_cache(self) -> None:
-        """Clear all cached data."""
-        if hasattr(self, '_cache_manager') and self._cache_manager:
-            self._cache_manager.clear()
+        self.cache = BlobCache(cache_dir, cache_max_size)
 
     def put_blob(
         self,
@@ -309,7 +288,6 @@ class WalrusClient:
         except RequestException as e:
             self._handle_request_error(e, "Error uploading blob from stream")
 
-    @cached_method()
     def get_blob_by_object_id(self, object_id: str) -> bytes:
         """
         Retrieve a blob from the aggregator by its object ID.
@@ -334,10 +312,11 @@ class WalrusClient:
                 e, f"Error retrieving blob by object ID: {object_id}"
             )
 
-    @cached_method()
     def get_blob(self, blob_id: str) -> bytes:
         """
         Retrieve a blob from the aggregator by its blob ID.
+
+        First checks the cache, and if not found, downloads from the server and caches it.
 
         Args:
             blob_id: The blob ID
@@ -348,12 +327,26 @@ class WalrusClient:
         Raises:
             WalrusAPIError: If the API request fails
         """
+        # Try to get from cache first
+        cached_data = self.cache.get(blob_id)
+        if cached_data is not None:
+            return cached_data
+
+        # Not in cache, download from server
         url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
 
         try:
             response = requests.get(url, timeout=self.timeout)
             response.raise_for_status()
-            return response.content
+            data = response.content
+            
+            # Cache the downloaded data
+            try:
+                self.cache.put(blob_id, data)
+            except Exception:
+                pass  # Cache failure shouldn't break the operation
+                
+            return data
         except RequestException as e:
             self._handle_request_error(
                 e, f"Error retrieving blob by blob ID: {blob_id}"
@@ -393,20 +386,47 @@ class WalrusClient:
         Raises:
             WalrusAPIError: If the API request fails
         """
+        # Try to get from cache first
+        cached_data = self.cache.get(blob_id)
+        if cached_data is not None:
+            with open(file_path, "wb") as f:
+                f.write(cached_data)
+            return
+
+        # Not in cache, download from server
         url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
         try:
             with requests.get(url, stream=True, timeout=self.timeout) as response:
                 response.raise_for_status()
-                with open(file_path, "wb") as f:
+                
+                # Write to file and cache simultaneously
+                temp_file = tempfile.NamedTemporaryFile(delete=False)
+                try:
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
-                            f.write(chunk)
+                            temp_file.write(chunk)
+                    temp_file.close()
+                    
+                    # Cache the downloaded file
+                    try:
+                        with open(temp_file.name, "rb") as f:
+                            data = f.read()
+                        self.cache.put(blob_id, data)
+                    except Exception:
+                        pass  # Cache failure shouldn't break the operation
+                    
+                    # Move the temp file to the destination
+                    shutil.move(temp_file.name, file_path)
+                except Exception:
+                    temp_file.close()
+                    if os.path.exists(temp_file.name):
+                        os.remove(temp_file.name)
+                    raise
         except RequestException as e:
             self._handle_request_error(
                 e, f"Error retrieving blob as file by blob ID: {blob_id}"
             )
 
-    @cached_method()
     def get_blob_metadata(self, blob_id: str) -> Dict[str, str]:
         """
         Retrieve metadata for a blob from the aggregator by making a HEAD request.
