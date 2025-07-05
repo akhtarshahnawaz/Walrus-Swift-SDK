@@ -70,7 +70,7 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
             throw URLError(.badURL)
         }
         
-        print("Uploading to URL: \(requestUrl.absoluteString)")
+        
         var request = URLRequest(url: requestUrl)
         request.httpMethod = "PUT"
         request.httpBody = data

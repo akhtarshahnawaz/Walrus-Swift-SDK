@@ -38,6 +38,24 @@ final class WalrusSDKTests: XCTestCase {
                 encodingType: TestConfig.Params.encodingType
             )
             XCTAssertFalse(response.isEmpty)
+            
+            print("RESPONSE: \(response)")
+            // Extract blobId from nested response dictionary
+            
+            if let blobId = findBlobId(in: response) {
+                do {
+                    let response = try await client.getBlobByObjectId(
+                        objectId: blobId
+                    )
+                    XCTAssertFalse(response.isEmpty)
+                    print("Retrieved Content: \(response)")
+                } catch {
+                    XCTFail("File re-retrieval after upload using getBlobByObjectId  failed: \(error)")
+                }
+            } else {
+                XCTFail("Failed to extract blobId from response")
+            }
+            
         } catch {
             XCTFail("File upload failed: \(error)")
         }
@@ -66,3 +84,25 @@ final class WalrusSDKTests: XCTestCase {
         }
     }
 }
+
+func findBlobId(in json: Any) -> String? {
+    if let dict = json as? [String: Any] {
+        for (key, value) in dict {
+            if key == "blobId", let blobId = value as? String {
+                return blobId
+            }
+            // Recursively search nested dictionaries or arrays
+            if let found = findBlobId(in: value) {
+                return found
+            }
+        }
+    } else if let array = json as? [Any] {
+        for item in array {
+            if let found = findBlobId(in: item) {
+                return found
+            }
+        }
+    }
+    return nil
+}
+
