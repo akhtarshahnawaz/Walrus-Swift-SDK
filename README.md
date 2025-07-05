@@ -2,8 +2,6 @@
 
 This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
 
----
-
 ## Features
 
 - Upload blobs from memory or file with configurable metadata
@@ -13,8 +11,6 @@ This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
 - Timeout configuration for all network operations
 - Local blob caching with customizable cache directory and size limits
 
----
-
 ## Integration Guide
 
 ### Step 1: Build the WalrusSDK Framework
@@ -23,8 +19,6 @@ This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
 2. Select the `WalrusSDK` framework target.
 3. Build the framework (`Product` → `Build` or `Cmd + B`).
 4. Locate the built `.framework` bundle in the build folder (e.g., `DerivedData`).
-
----
 
 ### Step 2: Add WalrusSDK to Your Project
 
@@ -43,15 +37,11 @@ If you host `WalrusSDK` in a Git repository, you can add it as a Swift package d
 - Choose the version or branch.
 - Add the package to your app target.
 
----
-
 ### Step 3: Import WalrusSDK in Your Code
 
 ```swift
 import WalrusSDK
 ```
-
----
 
 ## Usage
 
@@ -75,8 +65,6 @@ do {
     print("Failed to create WalrusClient:", error)
 }
 ```
-
----
 
 ### Uploading a Blob
 
@@ -113,8 +101,6 @@ func uploadBlobFromFile(client: WalrusClient, fileURL: URL) async {
 }
 ```
 
----
-
 ### Downloading a Blob
 
 Download blob data by its ID with automatic caching:
@@ -145,8 +131,6 @@ func downloadBlobAsFile(client: WalrusClient, blobId: String, destinationURL: UR
 }
 ```
 
----
-
 ### Fetch Blob Metadata
 
 Retrieve HTTP header metadata of a blob without downloading the content:
@@ -163,8 +147,6 @@ func fetchBlobMetadata(client: WalrusClient, blobId: String) async {
 }
 ```
 
----
-
 ## Error Handling
 
 `WalrusClient` throws descriptive errors of type `WalrusAPIError` containing:
@@ -176,8 +158,6 @@ func fetchBlobMetadata(client: WalrusClient, blobId: String) async {
 - `context`: Custom error context for easier debugging
 
 Use `do-catch` blocks and print or handle errors gracefully.
-
----
 
 ## Requirements
 
