@@ -7,127 +7,188 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E3D19DE32E19748A003D99FC /* Walrus_Swift_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */; };
+		E3D19E052E197880003D99FC /* Walrus_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3D19DFC2E197880003D99FC /* Walrus_SDK.framework */; };
+		E3D19E0A2E197880003D99FC /* Walrus_SDKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19E092E197880003D99FC /* Walrus_SDKTests.swift */; };
+		E3D19E0B2E197880003D99FC /* Walrus_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = E3D19DFF2E197880003D99FC /* Walrus_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E3D19E182E19797C003D99FC /* WalrusAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19E172E19797C003D99FC /* WalrusAPIError.swift */; };
+		E3D19E1A2E197995003D99FC /* BlobCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19E192E197995003D99FC /* BlobCache.swift */; };
+		E3D19E1C2E1979A9003D99FC /* WalrusClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19E1B2E1979A9003D99FC /* WalrusClient.swift */; };
+		E3D19E1E2E197A1A003D99FC /* Data+Sha256.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19E1D2E197A1A003D99FC /* Data+Sha256.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E3D19DE42E19748A003D99FC /* PBXContainerItemProxy */ = {
+		E3D19E062E197880003D99FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E3D19DCF2E197489003D99FC /* Project object */;
+			containerPortal = E3D19DF32E197880003D99FC /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E3D19DD72E19748A003D99FC;
-			remoteInfo = "Walrus Swift SDK";
+			remoteGlobalIDString = E3D19DFB2E197880003D99FC;
+			remoteInfo = "Walrus SDK";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Walrus_Swift_SDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E3D19DE22E19748A003D99FC /* Walrus Swift SDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Walrus Swift SDKTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3D19DFC2E197880003D99FC /* Walrus_SDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Walrus_SDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3D19DFF2E197880003D99FC /* Walrus_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Walrus_SDK.h; sourceTree = "<group>"; };
+		E3D19E042E197880003D99FC /* Walrus SDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Walrus SDKTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3D19E092E197880003D99FC /* Walrus_SDKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walrus_SDKTests.swift; sourceTree = "<group>"; };
+		E3D19E172E19797C003D99FC /* WalrusAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalrusAPIError.swift; sourceTree = "<group>"; };
+		E3D19E192E197995003D99FC /* BlobCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlobCache.swift; sourceTree = "<group>"; };
+		E3D19E1B2E1979A9003D99FC /* WalrusClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalrusClient.swift; sourceTree = "<group>"; };
+		E3D19E1D2E197A1A003D99FC /* Data+Sha256.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Sha256.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E3D19DD52E19748A003D99FC /* Frameworks */ = {
+		E3D19DF92E197880003D99FC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E3D19DDF2E19748A003D99FC /* Frameworks */ = {
+		E3D19E012E197880003D99FC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3D19DE32E19748A003D99FC /* Walrus_Swift_SDK.framework in Frameworks */,
+				E3D19E052E197880003D99FC /* Walrus_SDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E3D19DCE2E197489003D99FC = {
+		E3D19DF22E197880003D99FC = {
 			isa = PBXGroup;
 			children = (
-				E3D19DD92E19748A003D99FC /* Products */,
+				E3D19DFE2E197880003D99FC /* WalrusSDK */,
+				E3D19E082E197880003D99FC /* Walrus SDKTests */,
+				E3D19DFD2E197880003D99FC /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		E3D19DD92E19748A003D99FC /* Products */ = {
+		E3D19DFD2E197880003D99FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */,
-				E3D19DE22E19748A003D99FC /* Walrus Swift SDKTests.xctest */,
+				E3D19DFC2E197880003D99FC /* Walrus_SDK.framework */,
+				E3D19E042E197880003D99FC /* Walrus SDKTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E3D19DFE2E197880003D99FC /* WalrusSDK */ = {
+			isa = PBXGroup;
+			children = (
+				E3D19E162E19793F003D99FC /* Extensions */,
+				E3D19E152E197935003D99FC /* Services */,
+				E3D19E142E19792E003D99FC /* Models */,
+				E3D19DFF2E197880003D99FC /* Walrus_SDK.h */,
+			);
+			path = WalrusSDK;
+			sourceTree = "<group>";
+		};
+		E3D19E082E197880003D99FC /* Walrus SDKTests */ = {
+			isa = PBXGroup;
+			children = (
+				E3D19E092E197880003D99FC /* Walrus_SDKTests.swift */,
+			);
+			name = "Walrus SDKTests";
+			path = WalrusSDKTests;
+			sourceTree = "<group>";
+		};
+		E3D19E142E19792E003D99FC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E3D19E172E19797C003D99FC /* WalrusAPIError.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E3D19E152E197935003D99FC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E3D19E192E197995003D99FC /* BlobCache.swift */,
+				E3D19E1B2E1979A9003D99FC /* WalrusClient.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E3D19E162E19793F003D99FC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				E3D19E1D2E197A1A003D99FC /* Data+Sha256.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		E3D19DD32E19748A003D99FC /* Headers */ = {
+		E3D19DF72E197880003D99FC /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3D19E0B2E197880003D99FC /* Walrus_SDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		E3D19DD72E19748A003D99FC /* Walrus Swift SDK */ = {
+		E3D19DFB2E197880003D99FC /* Walrus SDK */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E3D19DEC2E19748A003D99FC /* Build configuration list for PBXNativeTarget "Walrus Swift SDK" */;
+			buildConfigurationList = E3D19E0E2E197880003D99FC /* Build configuration list for PBXNativeTarget "Walrus SDK" */;
 			buildPhases = (
-				E3D19DD32E19748A003D99FC /* Headers */,
-				E3D19DD42E19748A003D99FC /* Sources */,
-				E3D19DD52E19748A003D99FC /* Frameworks */,
-				E3D19DD62E19748A003D99FC /* Resources */,
+				E3D19DF72E197880003D99FC /* Headers */,
+				E3D19DF82E197880003D99FC /* Sources */,
+				E3D19DF92E197880003D99FC /* Frameworks */,
+				E3D19DFA2E197880003D99FC /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "Walrus Swift SDK";
-			productName = "Walrus Swift SDK";
-			productReference = E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */;
+			name = "Walrus SDK";
+			productName = "Walrus SDK";
+			productReference = E3D19DFC2E197880003D99FC /* Walrus_SDK.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		E3D19DE12E19748A003D99FC /* Walrus Swift SDKTests */ = {
+		E3D19E032E197880003D99FC /* Walrus SDKTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E3D19DEF2E19748A003D99FC /* Build configuration list for PBXNativeTarget "Walrus Swift SDKTests" */;
+			buildConfigurationList = E3D19E112E197880003D99FC /* Build configuration list for PBXNativeTarget "Walrus SDKTests" */;
 			buildPhases = (
-				E3D19DDE2E19748A003D99FC /* Sources */,
-				E3D19DDF2E19748A003D99FC /* Frameworks */,
-				E3D19DE02E19748A003D99FC /* Resources */,
+				E3D19E002E197880003D99FC /* Sources */,
+				E3D19E012E197880003D99FC /* Frameworks */,
+				E3D19E022E197880003D99FC /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E3D19DE52E19748A003D99FC /* PBXTargetDependency */,
+				E3D19E072E197880003D99FC /* PBXTargetDependency */,
 			);
-			name = "Walrus Swift SDKTests";
-			productName = "Walrus Swift SDKTests";
-			productReference = E3D19DE22E19748A003D99FC /* Walrus Swift SDKTests.xctest */;
+			name = "Walrus SDKTests";
+			productName = "Walrus SDKTests";
+			productReference = E3D19E042E197880003D99FC /* Walrus SDKTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E3D19DCF2E197489003D99FC /* Project object */ = {
+		E3D19DF32E197880003D99FC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
-					E3D19DD72E19748A003D99FC = {
+					E3D19DFB2E197880003D99FC = {
 						CreatedOnToolsVersion = 15.2;
+						LastSwiftMigration = 1520;
 					};
-					E3D19DE12E19748A003D99FC = {
+					E3D19E032E197880003D99FC = {
 						CreatedOnToolsVersion = 15.2;
 					};
 				};
 			};
-			buildConfigurationList = E3D19DD22E197489003D99FC /* Build configuration list for PBXProject "Walrus Swift SDK" */;
+			buildConfigurationList = E3D19DF62E197880003D99FC /* Build configuration list for PBXProject "Walrus SDK" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -135,26 +196,26 @@
 				en,
 				Base,
 			);
-			mainGroup = E3D19DCE2E197489003D99FC;
-			productRefGroup = E3D19DD92E19748A003D99FC /* Products */;
+			mainGroup = E3D19DF22E197880003D99FC;
+			productRefGroup = E3D19DFD2E197880003D99FC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E3D19DD72E19748A003D99FC /* Walrus Swift SDK */,
-				E3D19DE12E19748A003D99FC /* Walrus Swift SDKTests */,
+				E3D19DFB2E197880003D99FC /* Walrus SDK */,
+				E3D19E032E197880003D99FC /* Walrus SDKTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E3D19DD62E19748A003D99FC /* Resources */ = {
+		E3D19DFA2E197880003D99FC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E3D19DE02E19748A003D99FC /* Resources */ = {
+		E3D19E022E197880003D99FC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -164,32 +225,37 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E3D19DD42E19748A003D99FC /* Sources */ = {
+		E3D19DF82E197880003D99FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3D19E1C2E1979A9003D99FC /* WalrusClient.swift in Sources */,
+				E3D19E182E19797C003D99FC /* WalrusAPIError.swift in Sources */,
+				E3D19E1E2E197A1A003D99FC /* Data+Sha256.swift in Sources */,
+				E3D19E1A2E197995003D99FC /* BlobCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E3D19DDE2E19748A003D99FC /* Sources */ = {
+		E3D19E002E197880003D99FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3D19E0A2E197880003D99FC /* Walrus_SDKTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E3D19DE52E19748A003D99FC /* PBXTargetDependency */ = {
+		E3D19E072E197880003D99FC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E3D19DD72E19748A003D99FC /* Walrus Swift SDK */;
-			targetProxy = E3D19DE42E19748A003D99FC /* PBXContainerItemProxy */;
+			target = E3D19DFB2E197880003D99FC /* Walrus SDK */;
+			targetProxy = E3D19E062E197880003D99FC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E3D19DEA2E19748A003D99FC /* Debug */ = {
+		E3D19E0C2E197880003D99FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -253,7 +319,7 @@
 			};
 			name = Debug;
 		};
-		E3D19DEB2E19748A003D99FC /* Release */ = {
+		E3D19E0D2E197880003D99FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -309,9 +375,10 @@
 			};
 			name = Release;
 		};
-		E3D19DED2E19748A003D99FC /* Debug */ = {
+		E3D19E0F2E197880003D99FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -335,20 +402,22 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-Swift-SDK";
+				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		E3D19DEE2E19748A003D99FC /* Release */ = {
+		E3D19E102E197880003D99FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -372,7 +441,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-Swift-SDK";
+				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-SDK";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = YES;
@@ -383,16 +452,17 @@
 			};
 			name = Release;
 		};
-		E3D19DF02E19748A003D99FC /* Debug */ = {
+		E3D19E122E197880003D99FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-Swift-SDKTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-SDKTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -402,16 +472,17 @@
 			};
 			name = Debug;
 		};
-		E3D19DF12E19748A003D99FC /* Release */ = {
+		E3D19E132E197880003D99FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MACOSX_DEPLOYMENT_TARGET = 13.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-Swift-SDKTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "ethglobalcannes.Walrus-SDKTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -424,34 +495,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E3D19DD22E197489003D99FC /* Build configuration list for PBXProject "Walrus Swift SDK" */ = {
+		E3D19DF62E197880003D99FC /* Build configuration list for PBXProject "Walrus SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E3D19DEA2E19748A003D99FC /* Debug */,
-				E3D19DEB2E19748A003D99FC /* Release */,
+				E3D19E0C2E197880003D99FC /* Debug */,
+				E3D19E0D2E197880003D99FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E3D19DEC2E19748A003D99FC /* Build configuration list for PBXNativeTarget "Walrus Swift SDK" */ = {
+		E3D19E0E2E197880003D99FC /* Build configuration list for PBXNativeTarget "Walrus SDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E3D19DED2E19748A003D99FC /* Debug */,
-				E3D19DEE2E19748A003D99FC /* Release */,
+				E3D19E0F2E197880003D99FC /* Debug */,
+				E3D19E102E197880003D99FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E3D19DEF2E19748A003D99FC /* Build configuration list for PBXNativeTarget "Walrus Swift SDKTests" */ = {
+		E3D19E112E197880003D99FC /* Build configuration list for PBXNativeTarget "Walrus SDKTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E3D19DF02E19748A003D99FC /* Debug */,
-				E3D19DF12E19748A003D99FC /* Release */,
+				E3D19E122E197880003D99FC /* Debug */,
+				E3D19E132E197880003D99FC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E3D19DCF2E197489003D99FC /* Project object */;
+	rootObject = E3D19DF32E197880003D99FC /* Project object */;
 }
