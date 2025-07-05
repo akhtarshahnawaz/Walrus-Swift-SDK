@@ -1,1 +1,1 @@
-# Walrus-Swift-SDK
+# Walrus Swift SDK
