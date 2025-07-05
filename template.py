@@ -1,144 +1,271 @@
-import os, time
-import hashlib
+import os
 from typing import Dict, Optional, Any, BinaryIO, IO, Union
 import requests
 from requests.exceptions import RequestException
-from functools import lru_cache
+import hashlib
+import time
+from functools import wraps
+import pickle
 import tempfile
-import atexit
-import shutil
+
+
+class WalrusAPIError(RequestException):
+    """Exception raised for errors in the Walrus API responses."""
+
+    def __init__(
+        self, code: int, status: str, message: str, details: list, context: str = ""
+    ):
+        self.code = code
+        self.status = status
+        self.message = message
+        self.details = details
+        error_msg = f"{context}: HTTP {code} - {status}: {message}" + (
+            f" (Details: {details})" if details else ""
+        )
+        super().__init__(error_msg)
+
+    def __str__(self) -> str:
+        return f"HTTP {self.code} - {self.status}: {self.message}" + (
+            f" (Details: {self.details})" if self.details else ""
+        )
+
+
+class CacheManager:
+    """Handles caching operations for the WalrusClient."""
+    
+    def __init__(self, cache_dir: Optional[str] = None, max_memory_items: int = 100, ttl: int = 3600):
+        """
+        Initialize the cache manager.
+        
+        Args:
+            cache_dir: Directory for persistent cache (None for memory-only)
+            max_memory_items: Maximum items to keep in memory cache
+            ttl: Time-to-live for cache items in seconds
+        """
+        self.memory_cache: Dict[str, dict] = {}
+        self.max_memory_items = max_memory_items
+        self.ttl = ttl
+        self.cache_dir = cache_dir
+        if cache_dir and not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+    
+    def _get_cache_key(self, method: str, *args, **kwargs) -> str:
+        """Generate a unique cache key for a method call."""
+        key_parts = [method] + [str(arg) for arg in args]
+        for k, v in sorted(kwargs.items()):
+            key_parts.append(f"{k}={v}")
+        key_str = "|".join(key_parts)
+        return hashlib.sha256(key_str.encode()).hexdigest()
+    
+    def _get_cache_file_path(self, key: str) -> str:
+        """Get the filesystem path for a cache key."""
+        if not self.cache_dir:
+            return ""
+        return os.path.join(self.cache_dir, f"walrus_cache_{key}.pkl")
+    
+    def get(self, key: str) -> Optional[Any]:
+        """Retrieve an item from cache."""
+        # Try memory cache first
+        item = self.memory_cache.get(key)
+        if item:
+            if time.time() - item['timestamp'] < self.ttl:
+                return item['data']
+            del self.memory_cache[key]  # Remove expired item
+        
+        # Try filesystem cache if enabled
+        if self.cache_dir:
+            cache_file = self._get_cache_file_path(key)
+            if os.path.exists(cache_file):
+                try:
+                    with open(cache_file, 'rb') as f:
+                        item = pickle.load(f)
+                        if time.time() - item['timestamp'] < self.ttl:
+                            # Add to memory cache for faster access
+                            if len(self.memory_cache) < self.max_memory_items:
+                                self.memory_cache[key] = item
+                            return item['data']
+                        os.remove(cache_file)  # Remove expired cache file
+                except (pickle.PickleError, EOFError):
+                    os.remove(cache_file)  # Remove corrupted cache file
+        return None
+    
+    def set(self, key: str, data: Any) -> None:
+        """Store an item in cache."""
+        item = {
+            'data': data,
+            'timestamp': time.time()
+        }
+        
+        # Update memory cache
+        self.memory_cache[key] = item
+        
+        # If memory cache is full, remove oldest item
+        if len(self.memory_cache) > self.max_memory_items:
+            oldest_key = next(iter(self.memory_cache))
+            del self.memory_cache[oldest_key]
+        
+        # Store in filesystem cache if enabled
+        if self.cache_dir:
+            cache_file = self._get_cache_file_path(key)
+            try:
+                with open(cache_file, 'wb') as f:
+                    pickle.dump(item, f)
+            except (IOError, pickle.PickleError):
+                pass  # Silently fail if we can't write to filesystem cache
+    
+    def clear(self) -> None:
+        """Clear all cached data."""
+        self.memory_cache.clear()
+        if self.cache_dir:
+            for filename in os.listdir(self.cache_dir):
+                if filename.startswith("walrus_cache_") and filename.endswith(".pkl"):
+                    try:
+                        os.remove(os.path.join(self.cache_dir, filename))
+                    except OSError:
+                        pass
+
+
+def cached_method(ttl: Optional[int] = None):
+    """Decorator to cache method results."""
+    def decorator(method):
+        @wraps(method)
+        def wrapper(self, *args, **kwargs):
+            if not hasattr(self, '_cache_manager'):
+                return method(self, *args, **kwargs)
+                
+            cache_key = self._cache_manager._get_cache_key(
+                method.__name__, *args, **kwargs
+            )
+            cached_result = self._cache_manager.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+            
+            result = method(self, *args, **kwargs)
+            self._cache_manager.set(cache_key, result)
+            return result
+        return wrapper
+    return decorator
+
 
 class WalrusClient:
     """
-    Client for interacting with the Walrus API with caching and streaming support.
+    Client for interacting with the Walrus API with caching support.
+
+    Provides methods for uploading and retrieving binary blobs from publisher and aggregator endpoints.
     """
-    
+
     def __init__(
         self,
         publisher_base_url: str,
         aggregator_base_url: str,
         timeout: int = 30,
-        cache_enabled: bool = True,
         cache_dir: Optional[str] = None,
-        cache_max_size: int = 1024 * 1024 * 1024,  # 1GB default
-        cache_ttl: int = 3600  # 1 hour default
+        max_memory_items: int = 100,
+        cache_ttl: int = 3600,
+        enable_cache: bool = True
     ):
         """
-        Initialize the Walrus client with optional caching.
+        Initialize the Walrus client.
 
         Args:
             publisher_base_url: Base URL for the publisher service
             aggregator_base_url: Base URL for the aggregator service
             timeout: Request timeout in seconds
-            cache_enabled: Whether to enable caching
-            cache_dir: Directory to store cached files (None for temp dir)
-            cache_max_size: Maximum cache size in bytes
-            cache_ttl: Cache time-to-live in seconds
+            cache_dir: Directory for persistent cache (None for memory-only)
+            max_memory_items: Maximum items to keep in memory cache
+            cache_ttl: Time-to-live for cache items in seconds
+            enable_cache: Whether to enable caching
         """
         self.publisher_base_url = publisher_base_url.rstrip("/")
         self.aggregator_base_url = aggregator_base_url.rstrip("/")
         self.timeout = timeout
-        self.cache_enabled = cache_enabled
-        self.cache_max_size = cache_max_size
-        self.cache_ttl = cache_ttl
         
-        # Set up cache directory
-        if cache_dir:
-            self.cache_dir = cache_dir
-            os.makedirs(cache_dir, exist_ok=True)
+        if enable_cache:
+            self._cache_manager = CacheManager(
+                cache_dir=cache_dir,
+                max_memory_items=max_memory_items,
+                ttl=cache_ttl
+            )
         else:
-            self.cache_dir = tempfile.mkdtemp(prefix="walrus_cache_")
-            atexit.register(self._cleanup_temp_cache)
-            
-        # Track cache usage
-        self._cache_size = 0
-        self._cache_entries = {}  # {blob_id: (size, timestamp)}
-        
-    def _cleanup_temp_cache(self):
-        """Clean up temporary cache directory on exit."""
-        if hasattr(self, 'cache_dir') and not hasattr(self, '_user_provided_cache_dir'):
-            shutil.rmtree(self.cache_dir, ignore_errors=True)
-    
-    def _get_cache_path(self, blob_id: str) -> str:
-        """Get filesystem path for a cached blob."""
-        safe_id = hashlib.md5(blob_id.encode()).hexdigest()
-        return os.path.join(self.cache_dir, f"blob_{safe_id}")
-    
-    def _check_cache(self, blob_id: str) -> Optional[bytes]:
-        """Check if blob is in cache and return it if valid."""
-        if not self.cache_enabled:
-            return None
-            
-        cache_path = self._get_cache_path(blob_id)
-        
-        # Check if exists and not expired
-        if os.path.exists(cache_path):
-            mtime = os.path.getmtime(cache_path)
-            if (time.time() - mtime) < self.cache_ttl:
-                with open(cache_path, 'rb') as f:
-                    return f.read()
-            # Cache expired, remove it
-            os.remove(cache_path)
-            self._cache_size -= self._cache_entries.pop(blob_id, (0, 0))[0]
-        return None
-    
-    def _add_to_cache(self, blob_id: str, data: bytes):
-        """Add blob data to cache with size management."""
-        if not self.cache_enabled or len(data) > self.cache_max_size:
-            return
-            
-        # Check if we need to make space
-        while self._cache_size + len(data) > self.cache_max_size and self._cache_entries:
-            # Remove oldest entry
-            oldest_id = min(self._cache_entries.items(), key=lambda x: x[1][1])[0]
-            self._cache_size -= self._cache_entries[oldest_id][0]
-            os.remove(self._get_cache_path(oldest_id))
-            self._cache_entries.pop(oldest_id)
-            
-        # Add new entry
-        cache_path = self._get_cache_path(blob_id)
-        with open(cache_path, 'wb') as f:
-            f.write(data)
-            
-        self._cache_entries[blob_id] = (len(data), time.time())
-        self._cache_size += len(data)
-    
-    # Modified get_blob method with caching
-    def get_blob(self, blob_id: str, skip_cache: bool = False) -> bytes:
+            self._cache_manager = None
+
+    def clear_cache(self) -> None:
+        """Clear all cached data."""
+        if hasattr(self, '_cache_manager') and self._cache_manager:
+            self._cache_manager.clear()
+
+    def put_blob(
+        self,
+        data: bytes,
+        encoding_type: Optional[str] = None,
+        epochs: Optional[int] = None,
+        deletable: Optional[bool] = None,
+        send_object_to: Optional[str] = None,
+    ) -> Dict[str, Any]:
         """
-        Retrieve a blob from the aggregator by its blob ID with optional caching.
+        Upload binary data (a blob) to a publisher.
 
         Args:
-            blob_id: The blob ID
-            skip_cache: If True, bypass cache and always fetch from network
+            data: Binary data to upload
+            encoding_type: The encoding type to use for the blob
+            epochs: Number of epochs ahead of the current one to store the blob
+            deletable: If true, creates a deletable blob instead of a permanent one
+            send_object_to: If specified, sends the Blob object to this Sui address
 
         Returns:
-            Binary content of the blob
+            JSON response from the server
+
+        Raises:
+            WalrusAPIError: If the API request fails
         """
-        # Check cache first
-        if not skip_cache:
-            cached_data = self._check_cache(blob_id)
-            if cached_data is not None:
-                return cached_data
-                
-        # Not in cache or cache disabled, fetch from network
-        url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
-        
+        url = f"{self.publisher_base_url}/v1/blobs"
+        headers = {"Content-Type": "application/octet-stream"}
+        params = self._build_query_params(
+            encoding_type, epochs, deletable, send_object_to
+        )
+
         try:
-            response = requests.get(url, timeout=self.timeout)
+            response = requests.put(
+                url, data=data, headers=headers, params=params, timeout=self.timeout
+            )
             response.raise_for_status()
-            data = response.content
-            
-            # Add to cache if successful
-            if not skip_cache:
-                self._add_to_cache(blob_id, data)
-                
-            return data
+            return response.json()
         except RequestException as e:
-            self._handle_request_error(e, f"Error retrieving blob by blob ID: {blob_id}")
+            self._handle_request_error(e, "Error uploading blob")
 
+    def put_blob_from_file(
+        self,
+        file_path: str,
+        encoding_type: Optional[str] = None,
+        epochs: Optional[int] = None,
+        deletable: Optional[bool] = None,
+        send_object_to: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Upload a blob from a file to the publisher.
 
-    # Enhanced streaming methods
+        Args:
+            file_path: Path to the file to upload
+            encoding_type: The encoding type to use for the blob
+            epochs: Number of epochs ahead of the current one to store the blob
+            deletable: If true, creates a deletable blob instead of a permanent one
+            send_object_to: If specified, sends the Blob object to this Sui address
+
+        Returns:
+            JSON response from the server
+
+        Raises:
+            FileNotFoundError: If the file does not exist
+            WalrusAPIError: If the API request fails
+        """
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        with open(file_path, "rb") as file:
+            data = file.read()
+
+        return self.put_blob(data, encoding_type, epochs, deletable, send_object_to)
+
     def put_blob_from_stream(
         self,
         stream: BinaryIO,
@@ -146,23 +273,23 @@ class WalrusClient:
         epochs: Optional[int] = None,
         deletable: Optional[bool] = None,
         send_object_to: Optional[str] = None,
-        chunk_size: int = 8192,
-        progress_callback: Optional[callable] = None
     ) -> Dict[str, Any]:
         """
-        Enhanced streaming upload with progress tracking.
+        Upload a blob from a binary stream to the publisher.
 
         Args:
-            stream: Binary stream to upload
-            encoding_type: Encoding type for the blob
-            epochs: Number of epochs ahead to store
-            deletable: Whether blob is deletable
-            send_object_to: Sui address to send object to
-            chunk_size: Size of chunks to upload
-            progress_callback: Callback for progress (bytes_sent, total_bytes)
+            stream: Binary stream to upload (must be in binary mode)
+            encoding_type: The encoding type to use for the blob
+            epochs: Number of epochs ahead of the current one to store the blob
+            deletable: If true, creates a deletable blob instead of a permanent one
+            send_object_to: If specified, sends the Blob object to this Sui address
 
         Returns:
-            JSON response from server
+            JSON response from the server
+
+        Raises:
+            ValueError: If the stream is not readable
+            WalrusAPIError: If the API request fails
         """
         if not stream.readable():
             raise ValueError("Provided stream is not readable")
@@ -173,108 +300,189 @@ class WalrusClient:
             encoding_type, epochs, deletable, send_object_to
         )
 
-        # Get total size if possible
-        total_size = None
-        if hasattr(stream, 'seekable') and stream.seekable():
-            try:
-                pos = stream.tell()
-                stream.seek(0, 2)  # Seek to end
-                total_size = stream.tell() - pos
-                stream.seek(pos)  # Seek back
-            except (AttributeError, IOError):
-                pass
-
-        # Generator for streaming upload
-        def generate():
-            bytes_sent = 0
-            while True:
-                chunk = stream.read(chunk_size)
-                if not chunk:
-                    break
-                bytes_sent += len(chunk)
-                if progress_callback and total_size:
-                    progress_callback(bytes_sent, total_size)
-                yield chunk
-
         try:
             response = requests.put(
-                url,
-                data=generate(),
-                headers=headers,
-                params=params,
-                timeout=self.timeout,
-                stream=True
+                url, data=stream, headers=headers, params=params, timeout=self.timeout
             )
             response.raise_for_status()
             return response.json()
         except RequestException as e:
             self._handle_request_error(e, "Error uploading blob from stream")
 
-    def get_blob_as_stream(
-        self,
-        blob_id: str,
-        chunk_size: int = 8192,
-        progress_callback: Optional[callable] = None
-    ) -> IO[bytes]:
+    @cached_method()
+    def get_blob_by_object_id(self, object_id: str) -> bytes:
         """
-        Enhanced streaming download with progress tracking.
+        Retrieve a blob from the aggregator by its object ID.
+
+        Args:
+            object_id: The object ID of the blob
+
+        Returns:
+            Binary content of the blob
+
+        Raises:
+            WalrusAPIError: If the API request fails
+        """
+        url = f"{self.aggregator_base_url}/v1/blobs/by-object-id/{object_id}"
+
+        try:
+            response = requests.get(url, timeout=self.timeout)
+            response.raise_for_status()
+            return response.content
+        except RequestException as e:
+            self._handle_request_error(
+                e, f"Error retrieving blob by object ID: {object_id}"
+            )
+
+    @cached_method()
+    def get_blob(self, blob_id: str) -> bytes:
+        """
+        Retrieve a blob from the aggregator by its blob ID.
 
         Args:
             blob_id: The blob ID
-            chunk_size: Size of chunks to download
-            progress_callback: Callback for progress (bytes_received, total_bytes)
 
         Returns:
-            A file-like object for reading the blob data
+            Binary content of the blob
+
+        Raises:
+            WalrusAPIError: If the API request fails
         """
         url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
-        
+
         try:
-            response = requests.get(
-                url,
-                stream=True,
-                timeout=self.timeout,
-                headers={'Accept-Encoding': None}  # Disable compression for progress tracking
-            )
+            response = requests.get(url, timeout=self.timeout)
             response.raise_for_status()
-            
-            total_size = int(response.headers.get('content-length', 0))
-            bytes_received = 0
-            
-            def generate():
-                nonlocal bytes_received
-                for chunk in response.iter_content(chunk_size=chunk_size):
-                    if chunk:  # filter out keep-alive chunks
-                        bytes_received += len(chunk)
-                        if progress_callback and total_size:
-                            progress_callback(bytes_received, total_size)
-                        yield chunk
-            
-            # Create a file-like object from the generator
-            class StreamReader:
-                def __init__(self, generator):
-                    self.generator = generator
-                    self.buffer = b''
-                
-                def read(self, size=-1):
-                    if size < 0:
-                        return b''.join(self.generator)
-                    
-                    while len(self.buffer) < size:
-                        try:
-                            self.buffer += next(self.generator)
-                        except StopIteration:
-                            break
-                    
-                    data = self.buffer[:size]
-                    self.buffer = self.buffer[size:]
-                    return data
-                
-                def close(self):
-                    response.close()
-            
-            return StreamReader(generate())
+            return response.content
+        except RequestException as e:
+            self._handle_request_error(
+                e, f"Error retrieving blob by blob ID: {blob_id}"
+            )
+
+    def get_blob_as_stream(self, blob_id: str) -> IO[bytes]:
+        """
+        Retrieve a blob from the aggregator as a stream by its blob ID.
+
+        Args:
+            blob_id: The blob ID
+
+        Returns:
+            A file-like object (stream) for reading the blob data
+
+        Raises:
+            WalrusAPIError: If the API request fails
+        """
+        url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
+        try:
+            response = requests.get(url, stream=True, timeout=self.timeout)
+            response.raise_for_status()
+            return response.raw
         except RequestException as e:
             self._handle_request_error(
                 e, f"Error retrieving blob as stream by blob ID: {blob_id}"
             )
+
+    def get_blob_as_file(self, blob_id: str, file_path: str) -> None:
+        """
+        Retrieve a blob from the aggregator by its blob ID and save it to a file.
+
+        Args:
+            blob_id: The blob ID
+            file_path: The destination file path where the blob will be saved
+
+        Raises:
+            WalrusAPIError: If the API request fails
+        """
+        url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
+        try:
+            with requests.get(url, stream=True, timeout=self.timeout) as response:
+                response.raise_for_status()
+                with open(file_path, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:
+                            f.write(chunk)
+        except RequestException as e:
+            self._handle_request_error(
+                e, f"Error retrieving blob as file by blob ID: {blob_id}"
+            )
+
+    @cached_method()
+    def get_blob_metadata(self, blob_id: str) -> Dict[str, str]:
+        """
+        Retrieve metadata for a blob from the aggregator by making a HEAD request.
+
+        Args:
+            blob_id: The blob ID
+
+        Returns:
+            Dictionary containing the response headers
+
+        Raises:
+            WalrusAPIError: If the API request fails
+        """
+        url = f"{self.aggregator_base_url}/v1/blobs/{blob_id}"
+
+        try:
+            response = requests.head(url, timeout=self.timeout)
+            response.raise_for_status()
+            return dict(response.headers)
+        except RequestException as e:
+            self._handle_request_error(
+                e, f"Error retrieving metadata for blob ID: {blob_id}"
+            )
+
+    def _build_query_params(
+        self,
+        encoding_type: Optional[str] = None,
+        epochs: Optional[int] = None,
+        deletable: Optional[bool] = None,
+        send_object_to: Optional[str] = None,
+    ) -> Dict[str, str]:
+        """Build query parameters for blob upload requests."""
+        params = {}
+        if encoding_type is not None:
+            params["encoding_type"] = encoding_type
+        if epochs is not None:
+            params["epochs"] = str(epochs)
+        if deletable is not None:
+            params["deletable"] = "true" if deletable else "false"
+        if send_object_to is not None:
+            params["send_object_to"] = send_object_to
+        return params
+
+    def _handle_request_error(self, exception: RequestException, context: str) -> None:
+        """Handle request exceptions by extracting structured error information."""
+        if hasattr(exception, "response") and exception.response is not None:
+            try:
+                if exception.response.content:
+                    error_json = exception.response.json()
+                    if isinstance(error_json, dict) and "error" in error_json:
+                        err = error_json["error"]
+                        code = err.get("code", exception.response.status_code)
+                        status = err.get("status", "UNKNOWN")
+                        message = err.get("message", "")
+                        details = err.get("details", [])
+                        raise WalrusAPIError(
+                            code, status, message, details, context=context
+                        ) from exception
+
+                # Fall back to HTTP response info
+                code = exception.response.status_code
+                status = exception.response.reason or "UNKNOWN"
+                message = f"HTTP {code}: {status}"
+                raise WalrusAPIError(
+                    code, status, message, [], context=context
+                ) from exception
+
+            except (ValueError, requests.exceptions.JSONDecodeError):
+                code = exception.response.status_code
+                status = exception.response.reason or "UNKNOWN"
+                message = f"HTTP {code}: {status}"
+                raise WalrusAPIError(
+                    code, status, message, [], context=context
+                ) from exception
+        else:
+            # No response available - network error, timeout, etc.
+            raise WalrusAPIError(
+                500, "REQUEST_FAILED", str(exception), [], context=context
+            ) from exception
