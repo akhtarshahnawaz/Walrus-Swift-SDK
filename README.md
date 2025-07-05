@@ -1,4 +1,4 @@
-**WalrusSDK** is a Swift framework designed for seamless uploading, downloading, and caching of binary blobs, and streaming through configurable publisher and aggregator services with the Walrus HTTP API. It offers a flexible and secure client, `WalrusClient`, to interact with your backend APIs, handling data transfers and caching efficiently with support for both secure and insecure (non-SSL-validated) connections.
+**WalrusSDK** is a Swift framework designed for seamless uploading, downloading, publisher authentication, caching of binary blobs, and streaming through configurable publisher and aggregator services with the Walrus HTTP API. It offers a flexible and secure client, `WalrusClient`, to interact with your backend APIs, handling data transfers and caching efficiently with support for both secure and insecure (non-SSL-validated) connections.
 
 This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
 
@@ -157,6 +157,50 @@ func fetchBlobMetadata(client: WalrusClient, blobId: String) async {
 - `context`: Custom error context for easier debugging
 
 Use `do-catch` blocks and print or handle errors gracefully.
+
+## Authentication
+
+The `WalrusClient` supports JWT (JSON Web Token) authentication for secure API requests. You can set, update, or clear the authentication token as needed.
+
+#### Setting the JWT Token
+
+If your API requires authentication, set the JWT token before making requests:
+
+```swift
+// Set or update the JWT token
+client.setJWTToken("your.jwt.token.here")
+```
+
+The token will be included in the `Authorization` header for all subsequent requests as:
+
+```
+Authorization: Bearer your.jwt.token.here
+```
+
+#### Per-Request Token Override
+
+For individual requests, you can pass a token directly to methods that support it (overriding the client-wide token):
+
+```swift
+let response = try await client.putBlob(
+    data: data,
+    jwtToken: "temporary.token.here"  // Used only for this request
+)
+```
+
+#### Clearing the Token
+
+To remove authentication (e.g., during logout):
+
+```swift
+client.clearJWTToken()
+```
+
+#### Notes:
+
+1. **Secure Connections**: When `useSecureConnection: true` (recommended), all requests (including authenticated ones) are encrypted via HTTPS.
+2. **Token Storage**: The SDK does not persist tokens – manage token storage/refresh in your app layer.
+3. **Error Handling**: Expired/invalid tokens will result in `WalrusAPIError` with HTTP 401/403 status codes.
 
 ## Requirements
 

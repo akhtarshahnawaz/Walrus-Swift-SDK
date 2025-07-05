@@ -9,6 +9,8 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
     private let fileManager = FileManager.default
     
     private let useSecureConnection: Bool
+    private var jwtToken: String? // Stores the JWT token for authenticated requests
+    
     private lazy var session: URLSession = {
         if useSecureConnection {
             return URLSession.shared
@@ -24,14 +26,28 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         timeout: TimeInterval = 30,
         cacheDir: URL? = nil,
         cacheMaxSize: Int = 100,
-        useSecureConnection: Bool = false  // insecure by default
+        useSecureConnection: Bool = false,
+        jwtToken: String? = nil
     ) throws {
         self.publisherBaseURL = publisherBaseURL
         self.aggregatorBaseURL = aggregatorBaseURL
         self.timeout = timeout
         self.cache = try BlobCache(cacheDir: cacheDir, maxSize: cacheMaxSize)
         self.useSecureConnection = useSecureConnection
+        self.jwtToken = jwtToken
         super.init()
+    }
+    
+    // MARK: - Authentication Methods
+    
+    /// Sets or updates the JWT token for authenticated requests
+    public func setJWTToken(_ token: String) {
+        self.jwtToken = token
+    }
+    
+    /// Clears the current JWT token
+    public func clearJWTToken() {
+        self.jwtToken = nil
     }
     
     // URLSessionDelegate method to disable SSL validation if insecure mode is on
@@ -50,13 +66,15 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
     }
     
     // MARK: - Upload Methods
+    
     @available(macOS 12.0, iOS 15.0, *)
     public func putBlob(
         data: Data,
         encodingType: String? = nil,
         epochs: Int? = nil,
         deletable: Bool? = nil,
-        sendObjectTo: String? = nil
+        sendObjectTo: String? = nil,
+        jwtToken: String? = nil
     ) async throws -> [String: Any] {
         let url = publisherBaseURL.appendingPathComponent("v1/blobs")
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -70,12 +88,16 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
             throw URLError(.badURL)
         }
         
-        
         var request = URLRequest(url: requestUrl)
         request.httpMethod = "PUT"
         request.httpBody = data
         request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = timeout
+        
+        // Add JWT token if provided (either through method parameter or instance property)
+        if let token = jwtToken ?? self.jwtToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         
         let (data, _) = try await executeRequest(request: request, context: "Error uploading blob")
         return try parseJSONResponse(data: data)
@@ -87,7 +109,8 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         encodingType: String? = nil,
         epochs: Int? = nil,
         deletable: Bool? = nil,
-        sendObjectTo: String? = nil
+        sendObjectTo: String? = nil,
+        jwtToken: String? = nil
     ) async throws -> [String: Any] {
         guard fileManager.fileExists(atPath: fileURL.path) else {
             throw CocoaError(.fileNoSuchFile)
@@ -98,8 +121,66 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
             data: data,
             epochs: epochs,
             deletable: deletable,
-            sendObjectTo: sendObjectTo
+            sendObjectTo: sendObjectTo,
+            jwtToken: jwtToken
         )
+    }
+    
+    // MARK: - Streaming Upload
+    
+    @available(macOS 12.0, iOS 15.0, *)
+    public func putBlobStreaming(
+        fileURL: URL,
+        encodingType: String? = nil,
+        epochs: Int? = nil,
+        deletable: Bool? = nil,
+        sendObjectTo: String? = nil,
+        jwtToken: String? = nil
+    ) async throws -> [String: Any] {
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        
+        let url = publisherBaseURL.appendingPathComponent("v1/blobs")
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        components?.queryItems = buildQueryItems(epochs: epochs, deletable: deletable, sendObjectTo: sendObjectTo)
+        
+        guard let requestUrl = components?.url else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: requestUrl)
+        request.httpMethod = "PUT"
+        request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = timeout
+        
+        // Add JWT token if provided (either through method parameter or instance property)
+        if let token = jwtToken ?? self.jwtToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        // Wrap URLSessionUploadTask with continuation for async/await
+        return try await withCheckedThrowingContinuation { continuation in
+            let uploadTask = session.uploadTask(with: request, fromFile: fileURL) { data, response, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse,
+                      200..<300 ~= httpResponse.statusCode,
+                      let data = data else {
+                    continuation.resume(throwing: URLError(.badServerResponse))
+                    return
+                }
+                do {
+                    let json = try self.parseJSONResponse(data: data)
+                    continuation.resume(returning: json)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+            uploadTask.resume()
+        }
     }
     
     // MARK: - Download Methods
@@ -198,58 +279,7 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         
         return httpResponse.allHeaderFields
     }
-    
-    // MARK: - Streaming Upload
-    @available(macOS 12.0, iOS 15.0, *)
-    public func putBlobStreaming(
-        fileURL: URL,
-        encodingType: String? = nil,
-        epochs: Int? = nil,
-        deletable: Bool? = nil,
-        sendObjectTo: String? = nil
-    ) async throws -> [String: Any] {
-        guard fileManager.fileExists(atPath: fileURL.path) else {
-            throw CocoaError(.fileNoSuchFile)
-        }
-        
-        let url = publisherBaseURL.appendingPathComponent("v1/blobs")
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.queryItems = buildQueryItems(epochs: epochs, deletable: deletable, sendObjectTo: sendObjectTo)
-        
-        guard let requestUrl = components?.url else {
-            throw URLError(.badURL)
-        }
-        
-        var request = URLRequest(url: requestUrl)
-        request.httpMethod = "PUT"
-        request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
-        request.timeoutInterval = timeout
-        
-        // Wrap URLSessionUploadTask with continuation for async/await
-        return try await withCheckedThrowingContinuation { continuation in
-            let uploadTask = session.uploadTask(with: request, fromFile: fileURL) { data, response, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                guard let httpResponse = response as? HTTPURLResponse,
-                      200..<300 ~= httpResponse.statusCode,
-                      let data = data else {
-                    continuation.resume(throwing: URLError(.badServerResponse))
-                    return
-                }
-                do {
-                    let json = try self.parseJSONResponse(data: data)
-                    continuation.resume(returning: json)
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-            uploadTask.resume()
-        }
-    }
 
-    // MARK: - Streaming Download
 
     @available(macOS 12.0, iOS 15.0, *)
     public func getBlobAsFileStreaming(
@@ -310,11 +340,9 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         }
         try fileManager.moveItem(at: tempURL, to: destinationURL)
     }
-
-    
     // MARK: - Private Helpers
+    
     private func buildQueryItems(
-//        encodingType: String?,
         epochs: Int?,
         deletable: Bool?,
         sendObjectTo: String?

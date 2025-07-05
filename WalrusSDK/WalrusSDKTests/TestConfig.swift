@@ -6,7 +6,7 @@ enum TestConfig {
     static let mockAggregatorURL = URL(string: "https://agg.test.walrus.eosusa.io")!
     
     // MARK: - Test Data
-    static let testBlobID = "__7swun-DDZycpiChavVe3p6gBuKO-C5R9S8EexlzR0"
+    static let testBlobID = "Dk0h8UqEpinUZjsmkwE8T135b3z7W8tSxHD6W58xkTQ"
     static let testBlobData = Data("Test blob content".utf8)
     
     // MARK: - File Handling
