@@ -48,7 +48,7 @@ import WalrusSDK
 ### Creating a WalrusClient Instance
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
+
 do {
     let publisherURL = URL(string: "https://publisher.example.com")!
     let aggregatorURL = URL(string: "https://aggregator.example.com")!
@@ -71,14 +71,13 @@ do {
 Upload binary data with optional parameters:
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
 func uploadBlob(client: WalrusClient, data: Data) async {
     do {
         let response = try await client.putBlob(
             data: data,
             epochs: 5,
             deletable: true,
-            sendObjectTo: "receiver@example.com"
+            sendObjectTo: <account address>
         )
         print("Upload succeeded:", response)
     } catch {
@@ -90,7 +89,7 @@ func uploadBlob(client: WalrusClient, data: Data) async {
 Upload a blob directly from a file URL:
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
+
 func uploadBlobFromFile(client: WalrusClient, fileURL: URL) async {
     do {
         let response = try await client.putBlobFromFile(fileURL: fileURL)
@@ -106,7 +105,7 @@ func uploadBlobFromFile(client: WalrusClient, fileURL: URL) async {
 Download blob data by its ID with automatic caching:
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
+
 func downloadBlob(client: WalrusClient, blobId: String) async {
     do {
         let data = try await client.getBlob(blobId: blobId)
@@ -120,7 +119,7 @@ func downloadBlob(client: WalrusClient, blobId: String) async {
 Download blob as a file to a destination URL:
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
+
 func downloadBlobAsFile(client: WalrusClient, blobId: String, destinationURL: URL) async {
     do {
         try await client.getBlobAsFile(blobId: blobId, destinationURL: destinationURL)
@@ -136,7 +135,7 @@ func downloadBlobAsFile(client: WalrusClient, blobId: String, destinationURL: UR
 Retrieve HTTP header metadata of a blob without downloading the content:
 
 ```swift
-@available(iOS 15.0, macOS 12.0, *)
+
 func fetchBlobMetadata(client: WalrusClient, blobId: String) async {
     do {
         let metadata = try await client.getBlobMetadata(blobId: blobId)
