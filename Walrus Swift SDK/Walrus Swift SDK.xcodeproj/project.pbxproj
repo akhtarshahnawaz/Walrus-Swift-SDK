@@ -7,10 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E3D19DDD2E19748A003D99FC /* Walrus_Swift_SDK.docc in Sources */ = {isa = PBXBuildFile; fileRef = E3D19DDC2E19748A003D99FC /* Walrus_Swift_SDK.docc */; };
 		E3D19DE32E19748A003D99FC /* Walrus_Swift_SDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */; };
-		E3D19DE82E19748A003D99FC /* Walrus_Swift_SDKTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D19DE72E19748A003D99FC /* Walrus_Swift_SDKTests.swift */; };
-		E3D19DE92E19748A003D99FC /* Walrus_Swift_SDK.h in Headers */ = {isa = PBXBuildFile; fileRef = E3D19DDB2E19748A003D99FC /* Walrus_Swift_SDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,10 +22,7 @@
 
 /* Begin PBXFileReference section */
 		E3D19DD82E19748A003D99FC /* Walrus_Swift_SDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Walrus_Swift_SDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E3D19DDB2E19748A003D99FC /* Walrus_Swift_SDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Walrus_Swift_SDK.h; sourceTree = "<group>"; };
-		E3D19DDC2E19748A003D99FC /* Walrus_Swift_SDK.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Walrus_Swift_SDK.docc; sourceTree = "<group>"; };
 		E3D19DE22E19748A003D99FC /* Walrus Swift SDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Walrus Swift SDKTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E3D19DE72E19748A003D99FC /* Walrus_Swift_SDKTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Walrus_Swift_SDKTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +47,6 @@
 		E3D19DCE2E197489003D99FC = {
 			isa = PBXGroup;
 			children = (
-				E3D19DDA2E19748A003D99FC /* Walrus Swift SDK */,
-				E3D19DE62E19748A003D99FC /* Walrus Swift SDKTests */,
 				E3D19DD92E19748A003D99FC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -68,23 +60,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E3D19DDA2E19748A003D99FC /* Walrus Swift SDK */ = {
-			isa = PBXGroup;
-			children = (
-				E3D19DDB2E19748A003D99FC /* Walrus_Swift_SDK.h */,
-				E3D19DDC2E19748A003D99FC /* Walrus_Swift_SDK.docc */,
-			);
-			path = "Walrus Swift SDK";
-			sourceTree = "<group>";
-		};
-		E3D19DE62E19748A003D99FC /* Walrus Swift SDKTests */ = {
-			isa = PBXGroup;
-			children = (
-				E3D19DE72E19748A003D99FC /* Walrus_Swift_SDKTests.swift */,
-			);
-			path = "Walrus Swift SDKTests";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -92,7 +67,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3D19DE92E19748A003D99FC /* Walrus_Swift_SDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,7 +168,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3D19DDD2E19748A003D99FC /* Walrus_Swift_SDK.docc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,7 +175,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E3D19DE82E19748A003D99FC /* Walrus_Swift_SDKTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
