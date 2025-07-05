@@ -1,4 +1,4 @@
-**WalrusSDK** is a Swift framework designed for seamless uploading, downloading, and caching of binary blobs through configurable publisher and aggregator services. It offers a flexible and secure client, `WalrusClient`, to interact with your backend APIs, handling data transfers and caching efficiently with support for both secure and insecure (non-SSL-validated) connections.
+**WalrusSDK** is a Swift framework designed for seamless uploading, downloading, and caching of binary blobs, and streaming through configurable publisher and aggregator services with the Walrus HTTP API. It offers a flexible and secure client, `WalrusClient`, to interact with your backend APIs, handling data transfers and caching efficiently with support for both secure and insecure (non-SSL-validated) connections.
 
 This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
 

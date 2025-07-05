@@ -169,6 +169,8 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         try fileManager.moveItem(at: tempURL, to: destinationURL)
     }
     
+    
+    
     @available(macOS 12.0, iOS 15.0, *)
     public func getBlobMetadata(blobId: String) async throws -> [AnyHashable: Any] {
         let url = aggregatorBaseURL.appendingPathComponent("/v1/blobs/\(blobId)")
@@ -196,6 +198,119 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
         
         return httpResponse.allHeaderFields
     }
+    
+    // MARK: - Streaming Upload
+    @available(macOS 12.0, iOS 15.0, *)
+    public func putBlobStreaming(
+        fileURL: URL,
+        encodingType: String? = nil,
+        epochs: Int? = nil,
+        deletable: Bool? = nil,
+        sendObjectTo: String? = nil
+    ) async throws -> [String: Any] {
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        
+        let url = publisherBaseURL.appendingPathComponent("v1/blobs")
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        components?.queryItems = buildQueryItems(epochs: epochs, deletable: deletable, sendObjectTo: sendObjectTo)
+        
+        guard let requestUrl = components?.url else {
+            throw URLError(.badURL)
+        }
+        
+        var request = URLRequest(url: requestUrl)
+        request.httpMethod = "PUT"
+        request.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = timeout
+        
+        // Wrap URLSessionUploadTask with continuation for async/await
+        return try await withCheckedThrowingContinuation { continuation in
+            let uploadTask = session.uploadTask(with: request, fromFile: fileURL) { data, response, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                guard let httpResponse = response as? HTTPURLResponse,
+                      200..<300 ~= httpResponse.statusCode,
+                      let data = data else {
+                    continuation.resume(throwing: URLError(.badServerResponse))
+                    return
+                }
+                do {
+                    let json = try self.parseJSONResponse(data: data)
+                    continuation.resume(returning: json)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+            uploadTask.resume()
+        }
+    }
+
+    // MARK: - Streaming Download
+
+    @available(macOS 12.0, iOS 15.0, *)
+    public func getBlobAsFileStreaming(
+        blobId: String,
+        destinationURL: URL
+    ) async throws {
+        // Check cache first
+        if let cachedData = cache.get(blobId: blobId) {
+            try cachedData.write(to: destinationURL)
+            return
+        }
+        
+        let url = aggregatorBaseURL.appendingPathComponent("/v1/blobs/\(blobId)")
+        var request = URLRequest(url: url)
+        request.timeoutInterval = timeout
+        
+        // Use URLSession downloadTask with continuation to await
+        let (tempURL, response) = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(URL, URLResponse), Error>) in
+            let downloadTask = session.downloadTask(with: request) { tempURL, response, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                guard let tempURL = tempURL, let response = response else {
+                    continuation.resume(throwing: URLError(.badServerResponse))
+                    return
+                }
+                continuation.resume(returning: (tempURL, response))
+            }
+            downloadTask.resume()
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw WalrusAPIError(
+                code: 500,
+                status: "INVALID_RESPONSE",
+                message: "Invalid response from server"
+            )
+        }
+        
+        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
+            let errorData = try? Data(contentsOf: tempURL)
+            throw try handleErrorResponse(
+                data: errorData,
+                response: httpResponse,
+                context: "Error retrieving blob as file by blob ID: \(blobId)"
+            )
+        }
+        
+        // Cache the blob if possible
+        if let data = try? Data(contentsOf: tempURL) {
+            _ = try? cache.put(blobId: blobId, data: data)
+        }
+        
+        // Move downloaded file to destination
+        if fileManager.fileExists(atPath: destinationURL.path) {
+            try fileManager.removeItem(at: destinationURL)
+        }
+        try fileManager.moveItem(at: tempURL, to: destinationURL)
+    }
+
     
     // MARK: - Private Helpers
     private func buildQueryItems(
