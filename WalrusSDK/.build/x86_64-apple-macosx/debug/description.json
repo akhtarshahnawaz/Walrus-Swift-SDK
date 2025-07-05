@@ -1,7 +1,7 @@
 {
   "builtTestProducts" : [
     {
-      "binaryPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKPackageTests.xctest/Contents/MacOS/WalrusSDKPackageTests",
+      "binaryPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKPackageTests.xctest/Contents/MacOS/WalrusSDKPackageTests",
       "productName" : "WalrusSDKPackageTests"
     }
   ],
@@ -22,33 +22,33 @@
   "swiftCommands" : {
     "C.WalrusSDK-debug.module" : {
       "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
-      "importPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
+      "importPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
       "inputs" : [
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift"
         }
       ],
       "isLibrary" : true,
       "moduleName" : "WalrusSDK",
-      "moduleOutputPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule",
+      "moduleOutputPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule",
       "objects" : [
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swift.o",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swift.o",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swift.o",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swift.o"
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swift.o",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swift.o",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swift.o",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -57,7 +57,7 @@
         "5",
         "-enable-batch-mode",
         "-index-store-path",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
         "-Onone",
         "-enable-testing",
         "-g",
@@ -65,12 +65,12 @@
         "-DSWIFT_PACKAGE",
         "-DDEBUG",
         "-module-cache-path",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
         "-parseable-output",
         "-parse-as-library",
         "-emit-objc-header",
         "-emit-objc-header-path",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/WalrusSDK-Swift.h",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/WalrusSDK-Swift.h",
         "-color-diagnostics",
         "-sdk",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
@@ -94,57 +94,57 @@
       "outputs" : [
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule"
         }
       ],
       "sources" : [
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift"
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift"
       ],
-      "tempsPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build",
+      "tempsPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build",
       "wholeModuleOptimization" : false
     },
     "C.WalrusSDKTests-debug.module" : {
       "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
-      "importPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
+      "importPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
       "inputs" : [
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/TestConfig.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/TestConfig.swift"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.swiftmodule"
         }
       ],
       "isLibrary" : true,
       "moduleName" : "WalrusSDKTests",
-      "moduleOutputPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.swiftmodule",
+      "moduleOutputPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.swiftmodule",
       "objects" : [
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/TestConfig.swift.o",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/WalrusSDKTests.swift.o"
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/TestConfig.swift.o",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/WalrusSDKTests.swift.o"
       ],
       "otherArguments" : [
         "-target",
@@ -153,7 +153,7 @@
         "5",
         "-enable-batch-mode",
         "-index-store-path",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
         "-Onone",
         "-enable-testing",
         "-g",
@@ -161,7 +161,7 @@
         "-DSWIFT_PACKAGE",
         "-DDEBUG",
         "-module-cache-path",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
         "-parseable-output",
         "-parse-as-library",
         "-color-diagnostics",
@@ -187,22 +187,22 @@
       "outputs" : [
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/TestConfig.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/TestConfig.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/WalrusSDKTests.swift.o"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build/WalrusSDKTests.swift.o"
         },
         {
           "kind" : "file",
-          "name" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.swiftmodule"
+          "name" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.swiftmodule"
         }
       ],
       "sources" : [
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/TestConfig.swift",
-        "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift"
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/TestConfig.swift",
+        "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift"
       ],
-      "tempsPath" : "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build",
+      "tempsPath" : "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDKTests.build",
       "wholeModuleOptimization" : false
     }
   },
@@ -216,19 +216,19 @@
       "WalrusSDK",
       "-incremental",
       "-c",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift",
       "-I",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
       "-target",
       "x86_64-apple-macosx12.0",
       "-swift-version",
       "5",
       "-enable-batch-mode",
       "-index-store-path",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
       "-Onone",
       "-enable-testing",
       "-g",
@@ -236,12 +236,12 @@
       "-DSWIFT_PACKAGE",
       "-DDEBUG",
       "-module-cache-path",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
       "-parseable-output",
       "-parse-as-library",
       "-emit-objc-header",
       "-emit-objc-header-path",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/WalrusSDK-Swift.h",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/WalrusSDK-Swift.h",
       "-color-diagnostics",
       "-sdk",
       "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
@@ -270,17 +270,17 @@
       "WalrusSDKTests",
       "-incremental",
       "-c",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/TestConfig.swift",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/TestConfig.swift",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/WalrusSDKTests/WalrusSDKTests.swift",
       "-I",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug",
       "-target",
       "x86_64-apple-macosx13.0",
       "-swift-version",
       "5",
       "-enable-batch-mode",
       "-index-store-path",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/index/store",
       "-Onone",
       "-enable-testing",
       "-g",
@@ -288,7 +288,7 @@
       "-DSWIFT_PACKAGE",
       "-DDEBUG",
       "-module-cache-path",
-      "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
+      "/Users/shahnawazakhtar/Desktop/iWalrusSDK/WalrusSDK/.build/x86_64-apple-macosx/debug/ModuleCache",
       "-parseable-output",
       "-parse-as-library",
       "-color-diagnostics",
