@@ -1,28 +1,55 @@
 import Foundation
 
 @available(macOS 12.0, iOS 15.0, *)
-public final class WalrusClient {
+public final class WalrusClient: NSObject, URLSessionDelegate {
     public let publisherBaseURL: URL
     public let aggregatorBaseURL: URL
     public let timeout: TimeInterval
     public let cache: BlobCache
     private let fileManager = FileManager.default
     
+    private let useSecureConnection: Bool
+    private lazy var session: URLSession = {
+        if useSecureConnection {
+            return URLSession.shared
+        } else {
+            let config = URLSessionConfiguration.default
+            return URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        }
+    }()
+    
     public init(
         publisherBaseURL: URL,
         aggregatorBaseURL: URL,
         timeout: TimeInterval = 30,
         cacheDir: URL? = nil,
-        cacheMaxSize: Int = 100
+        cacheMaxSize: Int = 100,
+        useSecureConnection: Bool = false  // insecure by default
     ) throws {
         self.publisherBaseURL = publisherBaseURL
         self.aggregatorBaseURL = aggregatorBaseURL
         self.timeout = timeout
         self.cache = try BlobCache(cacheDir: cacheDir, maxSize: cacheMaxSize)
+        self.useSecureConnection = useSecureConnection
+        super.init()
+    }
+    
+    // URLSessionDelegate method to disable SSL validation if insecure mode is on
+    public func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        if !useSecureConnection {
+            // Insecure mode: accept any certificate
+            completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+        } else {
+            // Default behavior
+            completionHandler(.performDefaultHandling, nil)
+        }
     }
     
     // MARK: - Upload Methods
-    
     @available(macOS 12.0, iOS 15.0, *)
     public func putBlob(
         data: Data,
@@ -31,10 +58,9 @@ public final class WalrusClient {
         deletable: Bool? = nil,
         sendObjectTo: String? = nil
     ) async throws -> [String: Any] {
-        let url = publisherBaseURL.appendingPathComponent("/v1/blobs")
+        let url = publisherBaseURL.appendingPathComponent("v1/blobs")
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         components?.queryItems = buildQueryItems(
-            encodingType: encodingType,
             epochs: epochs,
             deletable: deletable,
             sendObjectTo: sendObjectTo
@@ -44,6 +70,7 @@ public final class WalrusClient {
             throw URLError(.badURL)
         }
         
+        print("Uploading to URL: \(requestUrl.absoluteString)")
         var request = URLRequest(url: requestUrl)
         request.httpMethod = "PUT"
         request.httpBody = data
@@ -69,7 +96,6 @@ public final class WalrusClient {
         let data = try Data(contentsOf: fileURL)
         return try await putBlob(
             data: data,
-            encodingType: encodingType,
             epochs: epochs,
             deletable: deletable,
             sendObjectTo: sendObjectTo
@@ -79,7 +105,7 @@ public final class WalrusClient {
     // MARK: - Download Methods
     @available(macOS 12.0, iOS 15.0, *)
     public func getBlobByObjectId(objectId: String) async throws -> Data {
-        let url = aggregatorBaseURL.appendingPathComponent("/v1/blobs/by-object-id/\(objectId)")
+        let url = aggregatorBaseURL.appendingPathComponent("/v1/blobs/\(objectId)")
         var request = URLRequest(url: url)
         request.timeoutInterval = timeout
         
@@ -112,7 +138,7 @@ public final class WalrusClient {
         }
         
         let url = aggregatorBaseURL.appendingPathComponent("/v1/blobs/\(blobId)")
-        let (tempURL, response) = try await URLSession.shared.download(from: url)
+        let (tempURL, response) = try await session.download(from: url)
         defer { try? fileManager.removeItem(at: tempURL) }
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -150,7 +176,7 @@ public final class WalrusClient {
         request.httpMethod = "HEAD"
         request.timeoutInterval = timeout
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw WalrusAPIError(
@@ -172,18 +198,14 @@ public final class WalrusClient {
     }
     
     // MARK: - Private Helpers
-    
     private func buildQueryItems(
-        encodingType: String?,
+//        encodingType: String?,
         epochs: Int?,
         deletable: Bool?,
         sendObjectTo: String?
     ) -> [URLQueryItem] {
         var items = [URLQueryItem]()
         
-        if let encodingType = encodingType {
-            items.append(URLQueryItem(name: "encoding_type", value: encodingType))
-        }
         if let epochs = epochs {
             items.append(URLQueryItem(name: "epochs", value: String(epochs)))
         }
@@ -199,7 +221,7 @@ public final class WalrusClient {
     
     @available(macOS 12.0, iOS 15.0, *)
     private func executeRequest(request: URLRequest, context: String) async throws -> (Data, URLResponse) {
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw WalrusAPIError(

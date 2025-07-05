@@ -1,0 +1,29 @@
+{
+  "": {
+    "swift-dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/master.swiftdeps"
+  },
+  "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Extensions/Data+Sha256.swift": {
+    "dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.d",
+    "object": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swift.o",
+    "swiftmodule": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256~partial.swiftmodule",
+    "swift-dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Extensions/Data+Sha256.swiftdeps"
+  },
+  "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Models/WalrusAPIError.swift": {
+    "dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.d",
+    "object": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swift.o",
+    "swiftmodule": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError~partial.swiftmodule",
+    "swift-dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Models/WalrusAPIError.swiftdeps"
+  },
+  "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/BlobCache.swift": {
+    "dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.d",
+    "object": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swift.o",
+    "swiftmodule": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache~partial.swiftmodule",
+    "swift-dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/BlobCache.swiftdeps"
+  },
+  "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/WalrusSDK/Services/WalrusClient.swift": {
+    "dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.d",
+    "object": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swift.o",
+    "swiftmodule": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/shahnawazakhtar/Desktop/Walrus-Swift-SDK/WalrusSDK/.build/x86_64-apple-macosx/debug/WalrusSDK.build/Services/WalrusClient.swiftdeps"
+  }
+}
