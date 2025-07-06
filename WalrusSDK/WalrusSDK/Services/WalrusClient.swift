@@ -51,19 +51,32 @@ public final class WalrusClient: NSObject, URLSessionDelegate {
     }
     
     // URLSessionDelegate method to disable SSL validation if insecure mode is on
+    // public func urlSession(
+    //     _ session: URLSession,
+    //     didReceive challenge: URLAuthenticationChallenge,
+    //     completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    // ) {
+    //     if !useSecureConnection {
+    //         // Insecure mode: accept any certificate
+    //         completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
+    //     } else {
+    //         // Default behavior
+    //         completionHandler(.performDefaultHandling, nil)
+    //     }
+    // }
     public func urlSession(
-        _ session: URLSession,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
-    ) {
-        if !useSecureConnection {
-            // Insecure mode: accept any certificate
-            completionHandler(.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-        } else {
-            // Default behavior
-            completionHandler(.performDefaultHandling, nil)
-        }
+    _ session: URLSession,
+    didReceive challenge: URLAuthenticationChallenge,
+    completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+) {
+    if !useSecureConnection && challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+       let trust = challenge.protectionSpace.serverTrust {
+        completionHandler(.useCredential, URLCredential(trust: trust))
+    } else {
+        completionHandler(.performDefaultHandling, nil)
     }
+}
+
     
     // MARK: - Upload Methods
     
