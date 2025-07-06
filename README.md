@@ -202,8 +202,9 @@ client.clearJWTToken()
 #### Notes:
 
 1. **Secure Connections**: When `useSecureConnection: true` (recommended), all requests (including authenticated ones) are encrypted via HTTPS.
-2. **Token Storage**: The SDK does not persist tokens – manage token storage/refresh in your app layer.
-3. **Error Handling**: Expired/invalid tokens will result in `WalrusAPIError` with HTTP 401/403 status codes.
+2. **Unsecured Testing**: On newer devices, the unsecure SSL connection doesn't (might require for testing) work even after setting it to false. You need to bypass it in `Info.plist` by setting `NSAllowsArbitraryLoads`.
+3. **Token Storage**: The SDK does not persist tokens – manage token storage/refresh in your app layer.
+4. **Error Handling**: Expired/invalid tokens will result in `WalrusAPIError` with HTTP 401/403 status codes.
 
 ## Requirements
 

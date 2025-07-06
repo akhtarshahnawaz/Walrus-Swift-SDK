@@ -28,27 +28,27 @@
     <dict>
         <key>NSAllowsArbitraryLoads</key> <!--Very Very Important for unsecured testing-->
         <true/>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>https://walrus-testnet-publisher.starduststaking.com</key>
-            <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-            <key>https://agg.test.walrus.eosusa.io</key>
-            <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                <true/>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-        </dict>
+<!--        <key>NSExceptionDomains</key>-->
+<!--        <dict>-->
+<!--            <key>https://walrus-testnet-publisher.starduststaking.com</key>-->
+<!--            <dict>-->
+<!--                <key>NSIncludesSubdomains</key>-->
+<!--                <true/>-->
+<!--                <key>NSExceptionAllowsInsecureHTTPLoads</key>-->
+<!--                <true/>-->
+<!--                <key>NSExceptionRequiresForwardSecrecy</key>-->
+<!--                <false/>-->
+<!--            </dict>-->
+<!--            <key>https://agg.test.walrus.eosusa.io</key>-->
+<!--            <dict>-->
+<!--                <key>NSIncludesSubdomains</key>-->
+<!--                <true/>-->
+<!--                <key>NSExceptionAllowsInsecureHTTPLoads</key>-->
+<!--                <true/>-->
+<!--                <key>NSExceptionRequiresForwardSecrecy</key>-->
+<!--                <false/>-->
+<!--            </dict>-->
+<!--        </dict>-->
     </dict>
 </dict>
 </plist>
