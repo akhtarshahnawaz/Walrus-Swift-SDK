@@ -19,6 +19,23 @@
 		E366B5402E1A093B004911BB /* WalrusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E366B53F2E1A093B004911BB /* WalrusManager.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E3E8E4D12E1A55050070D0AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E366B5312E1A0800004911BB /* WalrusSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E3D19DFC2E197880003D99FC;
+			remoteInfo = WalrusSDK;
+		};
+		E3E8E4D32E1A55050070D0AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E366B5312E1A0800004911BB /* WalrusSDK.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E3D19E042E197880003D99FC;
+			remoteInfo = WalrusSDKTests;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		E366B53E2E1A0891004911BB /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -102,6 +119,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E3E8E4CD2E1A55030070D0AF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E3E8E4D22E1A55050070D0AF /* WalrusSDK.framework */,
+				E3E8E4D42E1A55050070D0AF /* WalrusSDKTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -149,12 +175,35 @@
 			mainGroup = E366B50C2E19F757004911BB;
 			productRefGroup = E366B5162E19F758004911BB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E3E8E4CD2E1A55030070D0AF /* Products */;
+					ProjectRef = E366B5312E1A0800004911BB /* WalrusSDK.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E366B5142E19F758004911BB /* iWalrusDemo */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E3E8E4D22E1A55050070D0AF /* WalrusSDK.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = WalrusSDK.framework;
+			remoteRef = E3E8E4D12E1A55050070D0AF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E3E8E4D42E1A55050070D0AF /* WalrusSDKTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = WalrusSDKTests.xctest;
+			remoteRef = E3E8E4D32E1A55050070D0AF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E366B5132E19F758004911BB /* Resources */ = {
