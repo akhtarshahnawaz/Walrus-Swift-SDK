@@ -1,15 +1,18 @@
-**WalrusSDK** is a Swift framework designed for seamless uploading, downloading, publisher authentication, caching of binary blobs, and streaming through configurable publisher and aggregator services with the Walrus HTTP API. It offers a flexible and secure client, `WalrusClient`, to interact with your backend APIs, handling data transfers and caching efficiently with support for both secure and insecure (non-SSL-validated) connections.
+**iWalrusSDK** is an iOS SDK built to enable smooth uploading, downloading, publisher authentication, caching of binary blobs, and streaming via customizable publisher and aggregator services through the Walrus HTTP API. Designed to work seamlessly with Walrus—a decentralized blob storage service—it features a versatile and secure client, `WalrusClient`, that facilitates efficient interaction with backend APIs by managing data transfers and caching intelligently, while supporting both secure and insecure (non-SSL-validated) connections.
 
-This framework is compatible with **iOS 15.0+** and **macOS 12.0+**.
+This SDK is compatible with **iOS 15.0+** and **macOS 12.0+**.
 
 ## Features
 
-- Upload blobs from memory or file with configurable metadata
-- Download blobs by ID with automatic caching support
-- Retrieve blob metadata via HTTP HEAD requests
-- Optionally disable SSL validation for insecure environments
-- Timeout configuration for all network operations
-- Local blob caching with customizable cache directory and size limits
+- Upload blobs from memory or file with configurable metadata, ensuring flexibility in how data is sent to the storage backend.
+- Download blobs by ID with automatic caching support, reducing redundant network calls and improving performance through local storage.
+- Advanced local blob caching with customizable cache directory and size limits, allowing precise control over storage footprint and retrieval speed.
+- Streaming support for large blobs through configurable publisher and aggregator services, enabling efficient, chunked data transfer without exhausting device memory.
+- Publisher authentication to securely identify and authorize both upload and download operations, protecting data integrity and access.
+- Retrieve blob metadata via HTTP HEAD requests to check existence or versioning without transferring full content.
+- Optionally disable SSL validation for insecure or testing environments when needed.
+- Timeout configuration for all network operations, ensuring resilience against unstable network conditions.
+- Seamless integration with Walrus, a decentralized blob storage service, providing distributed and fault-tolerant data storage infrastructure.
 
 ## Integration Guide
 
